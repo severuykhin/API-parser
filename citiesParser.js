@@ -33,7 +33,6 @@ class CitiesParser {
 
 		axios.get(query)
 			.then( data => {
-				console.log(data.data.features);
 
 				let resp = data.data;
 
@@ -49,16 +48,29 @@ class CitiesParser {
 
 				fs.writeFileSync(this.outputFile, JSON.stringify(this.parsed));
 
+				console.log(`------ City Parser: city - ${cityName} - READY`);
+
 			})
 			.catch( e => {
 				console.log(e);
 			});
 	}
 
+	/**
+	 * Makes Set data collection from array to avoid repeats
+	 * @param {array} cities - Array of cities names 
+	 */
+	checkAndRemoveRepeats(cities) {
+		let set = new Set(cities);
+		console.log(`------- Clears ${cities.length} to ${set.size} data set`);
+		return set;
+	}
+
 	run() {
 
 		this.parsed = require(`./${this.outputFile}`);
 		this.inputCities  = this._parseCitiesFromFile(`./${this.inputFile}`);
+		this.inputCities = this.checkAndRemoveRepeats(this.inputCities);
 
 		let counter = 1;
 		
@@ -70,7 +82,11 @@ class CitiesParser {
 				return i.name.toLowerCase() === cityName;
 			});
 
-			if (isParsed) return;
+			if (isParsed) {
+				console.log(`------ City Parser: city - ${cityName} - already parsed`);
+				return;
+			}
+				
 
 			let timeout = 4000 * counter;
 

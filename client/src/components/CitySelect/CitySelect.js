@@ -9,7 +9,10 @@ const CitySelect = (props) => {
 		});
 	}
 
-	const cities = config.cities;
+	const cities = config.cities.sort((a,b) => {
+		if (a.name > b.name) return 1;
+		else return -1;
+	});
 
 	return (
 		<div className="control has-icons-left">
