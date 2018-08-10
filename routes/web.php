@@ -28,6 +28,7 @@ $router->get('api/search', 'ApiController@search');
 $router->get('api/google', 'ApiController@google');
 $router->get('api/googleplace', 'ApiController@googleplace');
 $router->post('api/export', 'ApiController@export');
+$router->get('api/parse', 'ApiController@parse');
 
 
 // Remetrika routes

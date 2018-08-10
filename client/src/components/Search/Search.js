@@ -58,8 +58,6 @@ class Search extends Component {
 		this.provider.get(query)
 			.then( data  => {
 
-				console.log(data);
-
 				const resFeatures = isLoadMore ? [...this.state.features, ...data.features] : data.features;
 
 				this.setState({
@@ -80,9 +78,25 @@ class Search extends Component {
 		this.makeQuery(newParams, true);		
 	}
 
+	/**
+	 * @param {array} cities - Array of cities geo points
+	 * @param {string} text - Search phrase
+	 */
+	parseCities = (cities, text) => {
+		const query = this.queryBuilder.makeGet('/api/parse', { cities, text });
+		this.provider.get(query)
+			.then( data => {
+				console.log(data);
+			})
+			.catch(e => {
+				throw e;
+			});
+	}
+
 	handleSubmit = (e) => {
 		e.preventDefault();
-		let city    = e.target.city.value;
+		let city    = e.target.city;
+		let options = city.options;
 		let text    = e.target.text.value;
 		let radius  = e.target.radius.value;
 		let results = e.target.results.value;
@@ -90,9 +104,26 @@ class Search extends Component {
 		if (!text) { 
 			alert('Введите поисковую фразу');
 			return;
-		 }
+		}
 
-		this.makeSearch({ city, text, radius, results });
+		const cities = [];
+
+		[].slice.apply(options, [0]).forEach( option => {
+			if (option.selected) {
+				cities.push(option.value);
+			}
+		});
+
+		if (cities.length === 1) {
+			this.makeSearch({ city : cities[0], text, radius, results });
+		} else if (cities.length > 10) {
+			alert('Можно выбрать не более 10 городов за раз!');
+			return;
+
+		} else {
+			this.parseCities(cities, text);
+		}
+
 	}
 
 	handleFilter = (params) => {
@@ -170,8 +201,10 @@ class Search extends Component {
 								<div className="row">
 									<div className="col-lg-3">
 										<div className="field">
-											<small className="text-muted">Город</small>			
-											<CitySelect />
+											<small className="text-muted">Города</small>			
+											<CitySelect
+												size={10}
+												multiple={true} />
 										</div>
 									</div>
 									<div className="col-lg-3">
@@ -184,13 +217,9 @@ class Search extends Component {
 												</span>
 											</div>
 										</div>	
-									</div>
-									<div className="col-lg-2">
 										<div className="form-group">
 											<RadiusSelect />
 										</div>
-									</div>
-									<div className="col-lg-2">
 										<div className="form-group">
 											<small className="text-muted">Результатов</small>
 											<VariantsBuilder 
@@ -199,8 +228,6 @@ class Search extends Component {
 												variants={config.amountValues}
 											/>
 										</div>
-									</div>
-									<div className="col-lg-2">
 										<div className="form-group">
 											<br/>
 											<button className={`button expand is-warning ${busyClassName}`} type="submit" >Искать</button>															

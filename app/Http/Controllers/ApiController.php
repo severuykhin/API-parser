@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Entities\SearchModel;
 use App\Entities\ExportModel;
 
+use Symfony\Component\VarDumper\VarDumper;
+
 class ApiController extends Controller
 {
     /**
@@ -48,6 +50,24 @@ class ApiController extends Controller
 		return json_encode([
 			'result' => 'ok',
 			'filePath' => $file  
+		]);
+	}
+
+	public function parse(Request $request) {
+
+		$cities = $request->input('cities');
+		$phrase = $request->input('text');
+
+		$data = SearchModel::parse($cities, $phrase);
+		// $export = new ExportModel($data);
+		// $file = $export->build('export-cities.xls');
+
+		// TO DO - Build export 
+
+
+		return json_encode([
+			'result' => 'ok',
+			'filePath' => 'some'
 		]);
 	}
 }
