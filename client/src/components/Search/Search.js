@@ -24,6 +24,7 @@ class Search extends Component {
 			busy : false,
 			results : null,
 			features : [],
+			cities : [],
 			params : {
 				'll'      : '37.64,55.76',
 			}
@@ -123,12 +124,15 @@ class Search extends Component {
 
 		if (cities.length === 1) {
 			this.makeSearch({ city : cities[0], text, radius, results });
-		} else if (cities.length > 10) {
+		} 
+		
+		else if (cities.length > 10) {
 			alert('Можно выбрать не более 10 городов за раз!');
 			return;
 
 		} else {
-			this.parseCities(cities, text);
+			// this.parseCities(cities, text);
+			this.setState({cities});
 		}
 
 	}
@@ -239,6 +243,11 @@ class Search extends Component {
 											<br/>
 											<button className={`button expand is-warning ${busyClassName}`} type="submit" >Искать</button>															
 										</div>
+									</div>
+									<div className="col-lg-3">
+										[{this.state.cities.map(item => {
+											return `'${item}',`;
+										})}]
 									</div>
 								</div>
 							</form>

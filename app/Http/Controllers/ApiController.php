@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\Request;
 use App\Entities\SearchModel;
 use App\Entities\ExportModel;
@@ -58,6 +59,8 @@ class ApiController extends Controller
 		$cities = $request->input('cities');
 		$phrase = $request->input('text');
 
+		$exitCode = Artisan::call('parse:cities');
+
 		$data = SearchModel::parse($cities, $phrase);
 		$export = new ExportModel($data);
 		$file = $export->build('export-cities-' . time() .'.xls');
@@ -67,7 +70,7 @@ class ApiController extends Controller
 
 		return json_encode([
 			'result' => 'ok',
-			'filePath' => $file
+			'exitCode' => $exitCode
 		]);
 	}
 }

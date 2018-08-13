@@ -40,6 +40,7 @@ class SearchModel {
 		$items = [];
 		$step  = 500;
 		$data  = null;
+		$count = 1;
 
 		foreach ($cities as $city) {
 
@@ -53,10 +54,12 @@ class SearchModel {
 				$results = $temp['properties']['ResponseMetaData']['SearchResponse']['found'];
 				foreach($temp['features'] as $item) {
 					$cityItems[] = $item;
+					echo 'Item #' . $count . 'parsed' . PHP_EOL;
+					$count++;
 				}
 
 				$skip += $step;
-
+				echo 'Data blob parsed' . PHP_EOL;
 				sleep(4);
 
 			} while (count($cityItems) < ((int) $results));
@@ -65,6 +68,8 @@ class SearchModel {
 			foreach($cityItems as $item) {
 				$items[] = $item;
 			}
+
+			echo 'City parsed' . PHP_EOL;
 
 			sleep(4);
 		}
