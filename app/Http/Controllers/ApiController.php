@@ -59,15 +59,15 @@ class ApiController extends Controller
 		$phrase = $request->input('text');
 
 		$data = SearchModel::parse($cities, $phrase);
-		// $export = new ExportModel($data);
-		// $file = $export->build('export-cities.xls');
+		$export = new ExportModel($data);
+		$file = $export->build('export-cities-' . time() .'.xls');
 
 		// TO DO - Build export 
 
 
 		return json_encode([
 			'result' => 'ok',
-			'filePath' => 'some'
+			'filePath' => $file
 		]);
 	}
 }

@@ -58,6 +58,8 @@ class Search extends Component {
 		this.provider.get(query)
 			.then( data  => {
 
+				console.log(data.features[0]);
+
 				const resFeatures = isLoadMore ? [...this.state.features, ...data.features] : data.features;
 
 				this.setState({
@@ -84,9 +86,13 @@ class Search extends Component {
 	 */
 	parseCities = (cities, text) => {
 		const query = this.queryBuilder.makeGet('/api/parse', { cities, text });
+
+		this.setState({ busy : true });
+
 		this.provider.get(query)
 			.then( data => {
 				console.log(data);
+				this.setState({ busy : false });
 			})
 			.catch(e => {
 				throw e;
@@ -95,6 +101,7 @@ class Search extends Component {
 
 	handleSubmit = (e) => {
 		e.preventDefault();
+		
 		let city    = e.target.city;
 		let options = city.options;
 		let text    = e.target.text.value;
