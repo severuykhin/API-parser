@@ -245,9 +245,11 @@ class Search extends Component {
 										</div>
 									</div>
 									<div className="col-lg-3">
-										[{this.state.cities.map(item => {
-											return `'${item}',`;
-										})}]
+										<div className="search-cities-text">
+											[{this.state.cities.map(item => {
+												return `'${item}',`;
+											})}]
+										</div>	
 									</div>
 								</div>
 							</form>

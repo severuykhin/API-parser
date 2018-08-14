@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use Symfony\Component\VarDumper\VarDumper;
+use App\Entities\ExportModel;
 
 
 class SearchModel {
@@ -35,7 +36,7 @@ class SearchModel {
 		return file_get_contents('https://maps.googleapis.com/maps/api/place/details/json?' . $queryString . '&key=' . self::GOOGLE_APIKEY);
 	}
 
-	public static function parse(array $cities, string $phrase) 
+	public static function parse(array $cities, string $phrase): int
 	{
 		$items = [];
 		$step  = 500;
@@ -54,7 +55,7 @@ class SearchModel {
 				$results = $temp['properties']['ResponseMetaData']['SearchResponse']['found'];
 				foreach($temp['features'] as $item) {
 					$cityItems[] = $item;
-					echo 'Item #' . $count . 'parsed' . PHP_EOL;
+					echo 'Item #' . $count . ' parsed' . PHP_EOL;
 					$count++;
 				}
 
@@ -64,19 +65,18 @@ class SearchModel {
 
 			} while (count($cityItems) < ((int) $results));
 
+			$data = self::prepareForExport($cityItems);
+			$fileName = 'export-cities-' . time() .'.xls';
 
-			foreach($cityItems as $item) {
-				$items[] = $item;
-			}
+			$export = new ExportModel($data);
+			$file = $export->build($fileName);
 
-			echo 'City parsed' . PHP_EOL;
+			echo 'City parsed and saved as --' . $file . '--' . PHP_EOL;
 
 			sleep(4);
 		}
 
-		$data = self::prepareForExport($items);
-
-		return $data;
+		return 0;
 	}
 
 	public static function prepareForExport(array $items):array 

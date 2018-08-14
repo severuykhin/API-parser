@@ -18,7 +18,7 @@ const CitySelect = (props) => {
 
 	if (multiple) {
 		return (
-			<div className="control has-icons-left">
+			<div className="control">
 				<div className="select is-multiple">
 					<select
 						multiple="false"
@@ -28,9 +28,6 @@ const CitySelect = (props) => {
 						id="city">
 						{ generateCities(cities) }
 					</select>
-					<span className="icon is-small is-left">
-						<i className="fas fa-map-marker"></i>
-					</span>
 				</div>
 			</div>
 		); 

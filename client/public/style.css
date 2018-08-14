@@ -273,6 +273,10 @@ body::-webkit-scrollbar {
 	text-align: center;
 }
 
+.search-cities-text {
+	word-break: break-all; 
+}
+
 .shake {
 	-webkit-animation-name: shake;
 	animation-name: shake;

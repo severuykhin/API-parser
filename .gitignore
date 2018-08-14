@@ -6,3 +6,4 @@ Homestead.yaml
 node_modules
 app/Entities/GoogleSearchModel.php
 app/Entities/RemetrikaModel.php
+*.xls
