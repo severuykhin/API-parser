@@ -59,7 +59,7 @@ class Search extends Component {
 		this.provider.get(query)
 			.then( data  => {
 
-				console.log(data.features[0]);
+				console.log(data);
 
 				const resFeatures = isLoadMore ? [...this.state.features, ...data.features] : data.features;
 
@@ -126,7 +126,7 @@ class Search extends Component {
 			this.makeSearch({ city : cities[0], text, radius, results });
 		} 
 		
-		else if (cities.length > 10) {
+		else if (cities.length > 20) {
 			alert('Можно выбрать не более 10 городов за раз!');
 			return;
 

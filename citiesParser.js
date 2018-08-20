@@ -15,9 +15,10 @@ class CitiesParser {
 	/**
 	 * Parse cities from txt file to Java Script object
 	 * @param { string } filePath
+	 * @param { string } separator
 	 */
-	_parseCitiesFromFile(filePath) {
-		const content = fs.readFileSync(filePath, 'utf-8').split('\r\n');
+	_parseCitiesFromFile(filePath, separator) {
+		const content = fs.readFileSync(filePath, 'utf-8').split(separator);
 		return content;
 	}
 
@@ -69,7 +70,7 @@ class CitiesParser {
 	run() {
 
 		this.parsed = require(`./${this.outputFile}`);
-		this.inputCities  = this._parseCitiesFromFile(`./${this.inputFile}`);
+		this.inputCities  = this._parseCitiesFromFile(`./${this.inputFile}`, '\r\n');
 		this.inputCities = this.checkAndRemoveRepeats(this.inputCities);
 
 		let counter = 1;

@@ -46,13 +46,17 @@ class ParseCitiesCommand extends Command
      */
     public function handle()
     {
-        $cities = ['91.442387,53.721152','52.297113,54.901383','103.88824,52.544358','44.03873,40.15541','40.516939,64.539393','48.033574,46.347869','47.782818,52.022331'];
-        $phrase = 'кухни';
+        $cities = ['84.947649,56.48464','37.617348,54.193122','65.534328,57.153033','107.584574,51.834464','48.402557,54.316855','131.95178,43.797273','55.958727,54.735147','135.071917,48.480223','37.43039,55.88874','37.906929,59.127415','113.499432,52.033973','40.215958,47.708485','38.444849,55.784445','46.126783,51.485489','142.738023,46.959155','129.732663,62.028103','39.893787,57.626569'];
+        $phrase = 'шкаф-купе';
+
         echo "Start parsing!";
-        $exitCode = SearchModel::parse($cities, $phrase);
-        if ($exitCode === 0) {
-            echo "Job is done!";
-        }
+
+        $fileName = 'export-cities-' . time() .'.xls';
+        $data   = SearchModel::parse($cities, $phrase);
+        $export = new ExportModel($data);
+        $file   = $export->build($fileName);
+
+        echo 'City parsed and saved as --' . $file . '--' . PHP_EOL;
         
     }
 }

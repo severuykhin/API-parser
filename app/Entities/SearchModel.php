@@ -36,7 +36,7 @@ class SearchModel {
 		return file_get_contents('https://maps.googleapis.com/maps/api/place/details/json?' . $queryString . '&key=' . self::GOOGLE_APIKEY);
 	}
 
-	public static function parse(array $cities, string $phrase): int
+	public static function parse(array $cities, string $phrase): array
 	{
 		$items = [];
 		$step  = 500;
@@ -66,17 +66,21 @@ class SearchModel {
 			} while (count($cityItems) < ((int) $results));
 
 			$data = self::prepareForExport($cityItems);
-			$fileName = 'export-cities-' . time() .'.xls';
 
-			$export = new ExportModel($data);
-			$file = $export->build($fileName);
+			foreach($data as $item) {
+				$items[] = $item;
+			}
+			
+			$memory = (memory_get_usage() / 1000) / 1000;
 
-			echo 'City parsed and saved as --' . $file . '--' . PHP_EOL;
-
-			sleep(4);
+			echo '---City parsed---' . PHP_EOL;
+			echo "--- Now used $memory mb of memory ----" . PHP_EOL;
 		}
 
-		return 0;
+		$memory = (memory_get_usage() / 1000) / 1000;
+		echo "--- Now used $memory mb of memory ----" . PHP_EOL;
+
+		return $items;
 	}
 
 	public static function prepareForExport(array $items):array 
