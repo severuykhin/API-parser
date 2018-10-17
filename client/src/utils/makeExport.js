@@ -4,7 +4,6 @@ export default function makeExport(features) {
 	const provider = new DataProvider();
 	let data = [];
 
-	console.log('sdf');
 
 	features.forEach((item, i) => {
 
@@ -12,16 +11,33 @@ export default function makeExport(features) {
 		const org = {};
 
 		org.name    = meta.name;
-		org.phones  = meta.Phones ? meta.Phones.map( i => {
-			return i.formatted;
-		}).join(', ') : '';
 		org.address = meta.address;
 		org.url     = meta.url ? meta.url : 'Сайта нет';
-		org.links   = meta.Links ? meta.Links.map(i => {
-			return i.href;
-		}).join(', ') : 'Не используют сервисы';
-		org.hours = meta.Hours ? meta.Hours.text : '';
+		org.phone1 = '';
+		org.phone2 = '';
+		org.phone3 = '';
+		org.phone4 = '';
 
+		org.links1 = ''; 
+		org.links2 = ''; 
+		org.links3 = ''; 
+		org.links4 = ''; 
+		org.links5 = ''; 
+
+		if (meta.Phones) {
+			meta.Phones.forEach((item, index) => {
+				if (index > 3) return;
+				org[`phone${index + 1}`] = item.formatted
+			});
+		}
+
+		if (meta.Links) {
+			meta.Links.forEach((item, index) => {
+				if (index > 4) return;
+				org[`links${index + 1}`] = item.href
+			});
+		}
+		org.hours = meta.Hours ? meta.Hours.text : '';
 
 		data.push(org);
 

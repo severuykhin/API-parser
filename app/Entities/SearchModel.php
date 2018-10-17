@@ -52,6 +52,7 @@ class SearchModel {
 
 				$json = file_get_contents('https://search-maps.yandex.ru/v1/?text=' . $phrase . '&lang=ru_RU&ll=' . $city . '&spn=0.400,0.360&type=biz&results=500&skip=' . $skip . '&apikey=' . self::YANDEX_APIKEY);
 				$temp = json_decode($json, true);
+
 				$results = $temp['properties']['ResponseMetaData']['SearchResponse']['found'];
 				foreach($temp['features'] as $item) {
 					$cityItems[] = $item;
@@ -61,6 +62,7 @@ class SearchModel {
 
 				$skip += $step;
 				echo 'Data blob parsed' . PHP_EOL;
+				if (count($cityItems) >= 2500) break;
 				sleep(4);
 
 			} while (count($cityItems) < ((int) $results));
@@ -89,32 +91,37 @@ class SearchModel {
 
 		foreach ($items as $item) {
 
+			if (!isset($item['properties'])) continue;
+
 			$props = $item['properties']['CompanyMetaData'];
 			$entity = [
 				'name'    => $props['name'],
 				'url'     => isset($props['url']) ? $props['url'] : 'нет сайта',
 				'address' => isset($props['address']) ? $props['address'] : '',
 				'hours'   => isset($props['Hours']) ? $props['Hours']['text'] : '',
-				'phones'  => '',
-				'links'   => ''
+				'phone1'  => '',
+				'phone2'  => '',
+				'phone3'  => '',
+				'phone4'  => '',
+				'link1'   => '',
+				'link2'   => '',
+				'link3'   => '',
+				'link4'   => '',
+				'link5'   => '',
 			];
 
 			if (isset($props['Links']) && count($props['Links']) > 0) {
-				$links = '';
-				foreach($props['Links'] as $item) {
-					$links = $links . $item['href'] . ',' . PHP_EOL;
+				foreach($props['Links'] as $key => $item) {
+					if ($key > 4) break;
+					$entity['link' . ($key + 1)] = $item['href'];
 				}
-
-				$entity['links'] = $links;
 			}
 
 			if (isset($props['Phones']) && count($props['Phones']) > 0) {
-				$phones = '';
-				foreach($props['Phones'] as $item) {
-					$phones = $phones . $item['formatted'] . ',' . PHP_EOL;
+				foreach($props['Phones'] as $key => $item) {
+					if ($key > 3) break;
+					$entity['phone' . ($key + 1)] = $item['formatted'];
 				}
-
-				$entity['phones'] = $phones;
 			}
 
 			$data[] = $entity;

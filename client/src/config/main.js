@@ -2,7 +2,7 @@ import jsonData from '../cities';
 
 export default {
 	cities : jsonData.cities,
-	radiusValues : [1, 5, 10, 15, 20],
+	radiusValues : [1, 5, 10, 15, 20, 100],
 	amountValues : [10, 50, 100, 250, 500],
 
 	periods : [

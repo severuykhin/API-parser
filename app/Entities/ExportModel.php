@@ -12,7 +12,7 @@ class ExportModel {
 	public function __construct(array $data) 
 	{
 		$this->data = $data;
-		$this->columnNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+		$this->columnNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
 	}
 
 	public function build(string $filename): string 

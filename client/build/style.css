@@ -38,6 +38,77 @@ body::-webkit-scrollbar {
 	padding: 100px 30px 30px 30px;
 } */
 
+
+/* Remetrika start */
+
+.remetrika {
+	height: calc(100vh - 68px);
+	overflow: hidden;
+	display: flex;
+}
+
+.remetrika-left {
+	width: 250px;
+}
+
+.remetrika-right {
+	width: calc(100% - 250px);
+	padding: 30px;
+	overflow-y: scroll;
+	height: 100%;
+}
+
+.stub {
+	height: 400px;
+	width: 100%;
+	position: relative;
+}
+.remetrika-counters {
+	position: relative;
+}
+
+.rem-av-counters {
+	height: 300px;
+	overflow-y: scroll;
+	width: 100%;	
+}
+
+.panel-block_wrap {
+	flex-wrap: wrap;
+}
+
+.remetrika-counters.is-loading::after {
+	-webkit-animation: spinAround .5s infinite linear;
+    animation: spinAround .5s infinite linear;
+    border: 2px solid #dbdbdb;
+    border-radius: 290486px;
+    border-right-color: transparent;
+    border-top-color: transparent;
+	content: "";
+	top: 50%;
+	left: 50%;
+    display: block;
+    height: 1em;
+    position: absolute;
+    width: 1em;
+}
+
+.stub.is-loading::after {
+	-webkit-animation: spinAround .5s infinite linear;
+    animation: spinAround .5s infinite linear;
+    border: 2px solid #dbdbdb;
+    border-radius: 290486px;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    content: "";
+    display: block;
+    height: 1em;
+    position: relative;
+    width: 1em;
+}
+
+/* Remetrika end */
+
 .navbar {
 	box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.466);
 }
@@ -48,6 +119,10 @@ body::-webkit-scrollbar {
 
 .navbar-item:hover {
 	text-decoration: none;
+}
+
+.panel-block .form-group {
+	width: 100%;
 }
 
 .map {
@@ -176,7 +251,7 @@ body::-webkit-scrollbar {
 	left: 10px;
 }
 
-.control.is-loading::after {
+.control.is-loading::after, .stub.is-loading::after {
     position: absolute;
     left: calc(50% - (1em / 2));
     top: calc(50% - (1em / 2)) !important;
@@ -196,6 +271,10 @@ body::-webkit-scrollbar {
 
 .centered {
 	text-align: center;
+}
+
+.search-cities-text {
+	word-break: break-all; 
 }
 
 .shake {
