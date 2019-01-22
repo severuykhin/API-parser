@@ -37,12 +37,19 @@ class CitiesParser {
 
 				let resp = data.data;
 
-
 				let geo = `${resp.features[0].geometry.coordinates[0]},${resp.features[0].geometry.coordinates[1]}`;
 
 				let cityData = {
 					name : resp.features[0].properties.name,
 					geo,
+					vp1: [
+						resp.features[0].properties.boundedBy[0][0],
+						resp.features[0].properties.boundedBy[1][1]
+					].join(','),
+					vp2: [
+						resp.features[0].properties.boundedBy[1][0],
+						resp.features[0].properties.boundedBy[0][1]
+					].join(',')
 				};
 
 				this.parsed.cities.push(cityData);
@@ -83,10 +90,10 @@ class CitiesParser {
 				return i.name.toLowerCase() === cityName;
 			});
 
-			if (isParsed) {
-				console.log(`------ City Parser: city - ${cityName} - already parsed`);
-				return;
-			}
+			// if (isParsed) {
+			// 	console.log(`------ City Parser: city - ${cityName} - already parsed`);
+			// 	return;
+			// }
 				
 
 			let timeout = 4000 * counter;
