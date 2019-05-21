@@ -1,0 +1,12 @@
+{
+    "name": "ramstel",
+    "version": "0.1.0",
+    "description": "ramstel",
+    "main": "",
+    "author": "Severuykhin Igor",
+    "license": "MIT",
+    "dependencies": {
+      "axios": "*"
+    }
+  }
+  

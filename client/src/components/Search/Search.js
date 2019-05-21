@@ -124,12 +124,6 @@ class Search extends Component {
 
 		if (cities.length === 1) {
 			this.makeSearch({ city : cities[0], text, radius, results });
-		} 
-		
-		else if (cities.length > 20) {
-			alert('Можно выбрать не более 10 городов за раз!');
-			return;
-
 		} else {
 			// this.parseCities(cities, text);
 			this.setState({cities});

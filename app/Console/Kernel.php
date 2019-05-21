@@ -14,6 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\parseCitiesCommand::class,
+        Commands\gisParseCommand::class,
+        Commands\avitoParseCommand::class,
     ];
 
     /**

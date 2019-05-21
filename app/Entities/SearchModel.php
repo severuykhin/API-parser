@@ -8,22 +8,25 @@ use App\Entities\ExportModel;
 
 class SearchModel {
 
-	const YANDEX_APIKEY = 'bd79323b-1a36-4c01-94ac-ebe0c862825f';
+	// const YANDEX_APIKEY = 'bd79323b-1a36-4c01-94ac-ebe0c862825f';
 	const GOOGLE_APIKEY = 'AIzaSyDC5epn4hDgXq5zWLw6Mnwj9uNLNgzDICw';
+
+	const YANDEX_APIKEY = '479d0db7-17bc-45b9-8a89-f0c29e7cb5e8';
+	// const YANDEX_APIKEY = '00ff4bd2-57b2-4e49-a5d3-9a708d4eaf0b';
 
 	/**
 	 * Make and return GET Yandex api request
 	 */
 
-	public static function getResults($queryString): string 
-	{	
+	public static function getResults($queryString): string
+	{
 		return file_get_contents('https://search-maps.yandex.ru/v1/?' . $queryString . '&apikey=' . self::YANDEX_APIKEY);
 	}
 
 	/**
 	 * Make and return GET Google places api request
 	 */
-	public static function getGooglePlaces(string $queryString): string 
+	public static function getGooglePlaces(string $queryString): string
 	{
 		return file_get_contents('https://maps.googleapis.com/maps/api/place/nearbysearch/json?' . $queryString . '&key=' . self::GOOGLE_APIKEY);
 	}
@@ -31,7 +34,7 @@ class SearchModel {
 	/**
 	 * Make and return GET Google places api request
 	 */
-	public static function getGooglePlace(string $queryString): string 
+	public static function getGooglePlace(string $queryString): string
 	{
 		return file_get_contents('https://maps.googleapis.com/maps/api/place/details/json?' . $queryString . '&key=' . self::GOOGLE_APIKEY);
 	}
@@ -72,11 +75,14 @@ class SearchModel {
 			foreach($data as $item) {
 				$items[] = $item;
 			}
-			
+
 			$memory = (memory_get_usage() / 1000) / 1000;
 
 			echo '---City parsed---' . PHP_EOL;
 			echo "--- Now used $memory mb of memory ----" . PHP_EOL;
+
+			sleep(8);
+
 		}
 
 		$memory = (memory_get_usage() / 1000) / 1000;
@@ -85,7 +91,7 @@ class SearchModel {
 		return $items;
 	}
 
-	public static function prepareForExport(array $items):array 
+	public static function prepareForExport(array $items):array
 	{
 		$data = [];
 
