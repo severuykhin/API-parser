@@ -45,7 +45,7 @@ class gisParseCommand extends Command
      */
     public function handle()
     {
-        $cities = json_decode(file_get_contents(__DIR__ . '/../../../client/src/cities.json'));
+        $cities = json_decode(file_get_contents(__DIR__ . '/../../../client/src/kirov.json'));
         $gisParser = new GisModel();
         $gisParser->parse($cities->cities);
     }

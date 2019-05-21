@@ -11,8 +11,7 @@ namespace App\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-
-// use App\Entities\GisModel;
+use App\Entities\AvitoModel;
 
 
 /**
@@ -28,14 +27,14 @@ class avitoParseCommand extends Command
      *
      * @var string
      */
-    protected $signature = "avito:parse";
+    protected $signature = "avito:parse {query}";
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = "Parse 2gis api data base with provided query";
+    protected $description = "Parse avito";
 
 
     /**
@@ -45,9 +44,14 @@ class avitoParseCommand extends Command
      */
     public function handle()
     {
-        // $cities = json_decode(file_get_contents(__DIR__ . '/../../../client/src/cities.json'));
-        // $gisParser = new GisModel();
-        // $gisParser->parse($cities->cities);
-        echo 'sdf';
+        exec("powershell -c (New-Object Media.SoundPlayer 'c:\sss.wav').PlaySync();");
+        die;
+        $cities = json_decode(file_get_contents(__DIR__ . '/../../../client/src/avito.json'));
+        $query = $this->argument('query');
+        $avitoParser = new avitoModel([
+            'cities' => $cities->cities,
+            'query' => $query
+        ]);
+        $avitoParser->parse();
     }
 }
