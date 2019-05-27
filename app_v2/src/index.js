@@ -9,7 +9,7 @@ import favicon from 'koa-favicon'
 import debug from 'debug'
 import Rollbar from 'rollbar'
 import path from 'path'
-import WebSocket from 'ws';
+import SocketServer from './socketServer'
 
 const ENV = process.env.NODE_ENV || 'development'
 const PORT = process.env.NODE_ENV ? 3010 : 3000
@@ -65,16 +65,4 @@ app.listen(PORT)
 if (process.send) process.send('online');
 debug('koa')(`Application started on port ${PORT}`)
 
-const server = new WebSocket.Server({ port: 8080 });
-server.on('connection', ws => {
-  ws.send('Hello from WebSocket');
-
-  ws.on('message', message => {
-    server.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send('recieved message');
-      }
-    })
-  });
-
-});
+SocketServer.init();

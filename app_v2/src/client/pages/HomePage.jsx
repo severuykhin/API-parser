@@ -1,86 +1,47 @@
 import React from 'react'
 import HelmetMeta from '../components/HelmetMeta/HelmetMeta.jsx'
-import bigCities from '../../data/cities-1.json'
-import smallCities from '../../data/cities-2.json'
 
 
 class Home extends React.Component {
 
-  constructor(params) {
-    super(params);
-    this.ws = null;
+  constructor(props) {
+    super(props);
 
-    this.requestInput = React.createRef();
+    this.requestInput = React.createRef()
 
-    this.state = {
-      status: 'Сокет оффлайн',
-      cities: {
-        0: {
-          type: 'Большие (от 150 т.)',
-          data: bigCities
-        },
-        1: {
-          type: 'Маленькие (от 50 до 150 т.)',
-          data: smallCities
-        }
-      },
-      activeCities: null
-    };
-  }
-
-  componentDidMount() {
-    if (BROWSER) {
-      this.ws = new WebSocket('ws://localhost:8080');
-
-      this.ws.onopen = () => {
-        this.setState({ status: 'Сокет онлайн' });
-      };
-
-    }
   }
 
   renderOptions() {
-    return Object.keys(this.state.cities).map((element, index) => {
-      let elem = this.state.cities[index];
+    if (!this.props.cities) return null;
+    return Object.keys(this.props.cities).map((element, index) => {
+      let elem = this.props.cities[index];
       return <option key={ index } value={ index }>{ elem.type }</option>
     })
   }
 
   handleSelectChange = (e) => {
     let valueId = e.target.value;
-
-    if (valueId === '') {
-      this.setState({ activeCities: null });
-      return false;
-    }
-
-    let activeCities = this.state.cities[valueId].data.cities;
-
-    activeCities.forEach(element => {
-      element.parsed = false;
-      element.progress = false;
-    });
-
-    this.setState({ activeCities });
-
-    return true;
+    this.props.handleSelectChange(valueId);
   }
 
   renderInput() {
     return <input ref={ this.requestInput } type='text' placeholder='Введите запрос' />
   }
 
+  startParsing = () => {
+    let phrase = this.requestInput.current.value;
+    this.props.startParsing(phrase);
+  }
+
   renderActiveCitiesList() {
     return (
       <ul>
-        { this.state.activeCities.map((item, index) => <li key={ index }> { item.name } </li>) }
+        { this.props.activeCities.map((item, index) => {
+
+          return <li key={ index }> { item.name }  { this.props.activeCityIndex === index ? '...' : '' } </li>
+        }) }
       </ul> 
     )
-  }
-
-  startParsing = () => {
-    let phrase = this.requestInput.current.value;
-    this.ws.send(phrase);
   }
 
   render() {
@@ -92,16 +53,16 @@ class Home extends React.Component {
     return (
 
       <div>
-        { this.state.status }
+        { this.props.status }
         <HelmetMeta meta={ meta } />
         <hr/>
         <select onChange={ this.handleSelectChange } name='cities-type' id='cities-type'>
           <option value=''>Выберите города для парсинга</option>
           { this.renderOptions() }
         </select>
-        { this.state.activeCities && this.renderInput() }
+        { this.props.activeCities && this.renderInput() }
         <button onClick={ this.startParsing }>Поехали</button>
-        { this.state.activeCities && this.renderActiveCitiesList() }
+        { this.props.activeCities && this.renderActiveCitiesList() }
       </div>
     )
   }

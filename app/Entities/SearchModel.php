@@ -11,8 +11,8 @@ class SearchModel {
 	// const YANDEX_APIKEY = 'bd79323b-1a36-4c01-94ac-ebe0c862825f';
 	const GOOGLE_APIKEY = 'AIzaSyDC5epn4hDgXq5zWLw6Mnwj9uNLNgzDICw';
 
-	const YANDEX_APIKEY = '479d0db7-17bc-45b9-8a89-f0c29e7cb5e8';
-	// const YANDEX_APIKEY = '00ff4bd2-57b2-4e49-a5d3-9a708d4eaf0b';
+	// const YANDEX_APIKEY = '479d0db7-17bc-45b9-8a89-f0c29e7cb5e8';
+	const YANDEX_APIKEY = '00ff4bd2-57b2-4e49-a5d3-9a708d4eaf0b';
 
 	/**
 	 * Make and return GET Yandex api request
