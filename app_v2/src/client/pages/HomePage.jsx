@@ -38,7 +38,9 @@ class Home extends React.Component {
       <ul>
         { this.props.activeCities.map((item, index) => {
 
-          return <li key={ index }> { item.name }  { this.props.activeCityIndex === index ? '...' : '' } </li>
+          let count = (item.count && item.count > 0) ? `(${item.count})` : '';
+
+          return <li key={ index }> { item.name } { count }  { this.props.activeCityIndex === index ? '...' : '' } </li>
         }) }
       </ul> 
     )

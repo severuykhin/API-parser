@@ -42,8 +42,9 @@ export default class HomePageContainer extends Component {
     let activeCities = this.state.cities[valueId].data.cities
 
     activeCities.forEach(element => {
-      element.parsed = false
-      element.progress = false
+      element.parsed = false;
+      element.progress = false;
+      element.count = 0;
     })
 
     this.setState({ activeCities })
@@ -83,6 +84,13 @@ export default class HomePageContainer extends Component {
 
     this.ws.onmessage = response => {
 
+      let message = JSON.parse(response.data);
+
+      if (message.type === 'result-notify') {
+        this.updateCityResults(message.data);
+        return false;
+      }
+
       activeCityIndex += 1
 
       if (activeCityIndex >= this.state.activeCities.length) {
@@ -111,15 +119,21 @@ export default class HomePageContainer extends Component {
     }
   }
 
+  updateCityResults(data) {
+    let { activeCities }  = this.state;
+    activeCities[data.cityId].count = data.count;
+    this.setState({ activeCities })
+  }
+
   render() {
     return (
       <HomePage
-        activeCities={this.state.activeCities}
-        status={this.state.status}
-        cities={this.state.cities}
-        activeCityIndex={this.state.activeCityIndex}
-        startParsing={this.startParsing.bind(this)}
-        handleSelectChange={this.handleSelectChange.bind(this)}
+        activeCities={ this.state.activeCities }
+        status={ this.state.status }
+        cities={ this.state.cities }
+        activeCityIndex={ this.state.activeCityIndex }
+        startParsing={ this.startParsing.bind(this) }
+        handleSelectChange={ this.handleSelectChange.bind(this) }
       />
     )
   }

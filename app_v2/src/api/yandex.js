@@ -9,10 +9,16 @@ import keys from '../data/keys.json'
 
 class YandexApi {
 
-  constructor() {
+  constructor(config) {
     this.keys = keys.yandex;
     this.activeKey = null;
+
     this.fileName = null;
+    this.fileDescriptor = config.fileDescriptor;
+    this.city = config.city;
+    this.request = config.request;
+
+    this.onDataCallback = config.onData;
 
     this.setActiveKey();
 
@@ -52,6 +58,11 @@ class YandexApi {
     this.activeKey = this.keys[keyIndex];
   }
 
+  changeActiveKey() {
+    this.keys[this.activeKey].empty = true;
+    this.setActiveKey();
+  }
+
   createFile() {
 
     if(fs.existsSync(this.fileName)) return;
@@ -63,13 +74,13 @@ class YandexApi {
     });
   }
 
-  setFileName(requestPhrase, fileDescriptor) {
-    this.fileName = `${requestPhrase}-${fileDescriptor}.csv`;
+  setFileName() {
+    this.fileName = `${this.request}-${this.fileDescriptor}.csv`;
   }
 
-  async parse(request, city, fileDescriptor) {
+  async parse() {
 
-    this.setFileName(request, fileDescriptor);
+    this.setFileName();
     this.createFile();
 
     return new Promise(async (resolve, reject) => {
@@ -83,43 +94,51 @@ class YandexApi {
 
       do {
 
-        let response = await this.getContent({ request, city, skip });
+        let response = await this.getContent({ skip });
         let items = response.data.features;
+
+        if (!response.data || !response.data.features) {
+          this.changeActiveKey();
+          continue;
+        }
 
         resultsCount = response.data.properties.ResponseMetaData.SearchResponse.found;
 
         items.forEach((item, index) => {
-          this.processItem(item, index, city.name);
+          this.processItem(item, index);
           count++;
         });
 
         skip += step;
+
+        this.onDataCallback({ count, cityId: this.city.id });
+
         await this.noop();
 
       } while (resultsCount > count);
 
-      resolve(city.name);
+      resolve(this.city.name);
 
     });
   }
 
   async getContent(params) {
-    return axios.get(`https://search-maps.yandex.ru/v1/?text=${encodeURIComponent(params.request)}&lang=ru_RU&ll=${params.city.geo}&spn=0.400,0.360&type=biz&results=500&skip=${params.skip}&apikey=${this.activeKey.key}`);
+    return axios.get(`https://search-maps.yandex.ru/v1/?text=${encodeURIComponent(this.request)}&lang=ru_RU&ll=${this.city.geo}&spn=0.400,0.360&type=biz&results=500&skip=${params.skip}&apikey=${this.activeKey.key}`);
   }
 
   async noop() {
     return new Promise((res, rej) => {
       setTimeout(() => {
         res();
-      }, 4000);
+      }, 5000);
     });
   }
 
-  processItem(item, index, cityName) {
+  processItem(item, index) {
 
     let props = item.properties.CompanyMetaData;
     let entity = {
-      city: cityName,
+      city: this.city.name,
       name: props.name,
       address: props.address ? props.address : '',
       url: props.url ? props.url : 'нет сайта',
@@ -177,4 +196,4 @@ class YandexApi {
 
 }
 
-export default new YandexApi();
+export default YandexApi;
