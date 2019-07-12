@@ -21,7 +21,7 @@
         "storybook": "start-storybook -p 9009 -s public",
         "build-storybook": "build-storybook -s public"
     },
-    "proxy": "http://parser.loc/",
+    "proxy": "http://localhost:5000",
     "devDependencies": {
         "@kadira/storybook": "^2.21.0",
         "@storybook/react": "^3.4.6",

@@ -1,4 +1,4 @@
-import jsonData from '../cities';
+import jsonData from '../cities-big';
 
 export default {
 	cities : jsonData.cities,

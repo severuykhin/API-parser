@@ -8,6 +8,7 @@ class Home extends React.Component {
     super(props);
 
     this.requestInput = React.createRef()
+    this.enablePartitionCheckbox = React.createRef();
 
   }
 
@@ -29,8 +30,10 @@ class Home extends React.Component {
   }
 
   startParsing = () => {
-    let phrase = this.requestInput.current.value;
-    this.props.startParsing(phrase);
+    let phrase = this.requestInput.current.value,
+        enablePartition = this.enablePartitionCheckbox.current.checked;
+
+    this.props.startParsing(phrase, enablePartition);
   }
 
   renderActiveCitiesList() {
@@ -43,6 +46,15 @@ class Home extends React.Component {
           return <li key={ index }> { item.name } { count }  { this.props.activeCityIndex === index ? '...' : '' } </li>
         }) }
       </ul> 
+    )
+  }
+
+  renderEnablePartitionCheckbox() {
+    return (
+      <label>
+        <input ref={this.enablePartitionCheckbox} type="checkbox"/>
+        Разбить таблицу по городам
+      </label>
     )
   }
 
@@ -63,6 +75,7 @@ class Home extends React.Component {
           { this.renderOptions() }
         </select>
         { this.props.activeCities && this.renderInput() }
+        { this.props.activeCities && this.renderEnablePartitionCheckbox() }
         <button onClick={ this.startParsing }>Поехали</button>
         { this.props.activeCities && this.renderActiveCitiesList() }
       </div>

@@ -20,7 +20,9 @@ class SocketServer {
 
         let yaParser = new YandexApi({
           request: data.phrase,
+          enablePartition: data.enablePartition,
           city: data.activeCity,
+          cityIndex: data.cityIndex,
           fileDescriptor: data.fileDescriptor,
           onData: this.notifyCityResults
         });

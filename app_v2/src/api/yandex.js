@@ -16,7 +16,9 @@ class YandexApi {
     this.fileName = null;
     this.fileDescriptor = config.fileDescriptor;
     this.city = config.city;
+    this.cityIndex = config.cityIndex;
     this.request = config.request;
+    this.enablePartition = config.enablePartition;
 
     this.onDataCallback = config.onData;
 
@@ -83,6 +85,11 @@ class YandexApi {
     this.setFileName();
     this.createFile();
 
+    if (this.enablePartition) {
+      this.appendEmptyLine();
+      this.appendCityLine();
+    }
+
     return new Promise(async (resolve, reject) => {
 
       let step = 500;
@@ -111,7 +118,7 @@ class YandexApi {
 
         skip += step;
 
-        this.onDataCallback({ count, cityId: this.city.id });
+        this.onDataCallback({ count, cityId: this.cityIndex, items });
 
         await this.noop();
 
@@ -154,10 +161,8 @@ class YandexApi {
 
 
     // TO DO - 
-    // 3. Сообщения с сервера с количеством полученных результатов - для прогресса
     // 4. Фильтрация по ссылкам - чтобы были только нужные
     // 5. Разбить соощения по типам
-    // 6. Автопереключение ключей апи
 
     if (props.Links && props.Links.length > 0) {
       props.Links.forEach((link, index) => {
@@ -183,8 +188,46 @@ class YandexApi {
       });
     }
 
-    let line = '';
+    this.appendLine(entity);
+  }
 
+  /** 
+   * Appends empty line with city name into CSV table
+  */
+  appendCityLine() {
+    let entity = this.getEmptyEntity();
+    entity.city = this.city.name;
+    this.appendLine(entity);
+  }
+
+  appendEmptyLine() {
+    this.appendLine(this.getEmptyEntity());
+  }
+
+  getEmptyEntity() {
+    return {
+      city: '',
+      name: '',
+      address: '',
+      url: '',
+      phone1: '',
+      phone2: '',
+      phone3: '',
+      phone4: '',
+      link1: '',
+      link2: '',
+      link3: '',
+      link4: ''
+    }
+  }
+
+  /** 
+   * @param { object } entity
+   * Appends line into CSV table
+  */
+  appendLine(entity) {
+    let line = '';
+  
     for (let i in entity) {
       line += `${entity[i]};`;
     }
