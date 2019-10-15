@@ -6,13 +6,14 @@
 import axios from 'axios'
 import fs from 'fs'
 import querystring from 'querystring'
+import errorResponseParser from '../helpers/yandexErrorResponseParser'
 
 class YandexApi {
 
   constructor(config) {
 
-    this.onDataCallback = config.onData;
-    this.onError = config.onError;
+    this.onDataCallback  = config.onData;
+    this.onErrorCallback = config.onError;
 
     this.keysManager = config.keysManager;
 
@@ -40,14 +41,6 @@ class YandexApi {
   }
 
   load(data) {
-    // Request schema
-    // {
-    //   request: data.phrase,
-    //   enablePartition: data.enablePartition,
-    //   city: data.activeCity,
-    //   cityIndex: data.cityIndex,
-    //   fileDescriptor: data.fileDescriptor,
-    // }
 
     this.fileName = data.fileName + '.csv';
     this.city = data.city;
@@ -85,23 +78,17 @@ class YandexApi {
       let resultsCount;
 
       do {
-        
-        let response = await this.getContent({ skip });
 
-        /**
-         * @todo - Обработать ошибки запроса
-         */
-        // try {
-        // } catch(e) {
-        //   // Api key limit
-        //   if (e.toString() === 'Error: Request failed with status code 403') {
-        //     this.onError({message: 'Ключ апи исчерпал лимит запросов', type: 'error-limit'})
-        //     console.log(this.key);
-        //     this.changeActiveKey();
-        //     console.log(this.key);
-        //     reject();
-        //   }
-        // }
+        let response;
+
+        try {
+          response = await this.getContent({ skip });
+        } catch(e) {
+          let error = errorResponseParser(e, this);
+          this.onErrorCallback(error);
+          this.keysManager.changeActiveKey();
+          continue;
+        }
 
         let items = response.data.features;
 
@@ -118,18 +105,21 @@ class YandexApi {
 
         skip += step;
 
-        this.onDataCallback('city-process', { 
+        this.onDataCallback({type: 'city-process', data: { 
           count, 
           city: this.city, 
           items 
-        });
+        }});
 
         await this.noop();
 
       } while (resultsCount > count);
 
-      this.onDataCallback('city-end', { count, city: this.city });
-      resolve(this.city.name);
+      resolve({
+        result: 'success', 
+        type: 'city-end', 
+        data: { count, city: this.city }
+      });
 
     });
   }

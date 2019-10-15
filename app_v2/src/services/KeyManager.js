@@ -1,7 +1,7 @@
 class KeyManager {
 
     constructor(config) {
-        this.keys = config.keys.yandex;
+        this.keys = config.keys.yandex.map(key => { key.empty = false; return key });
         this.activeKey = 0;
     }
 

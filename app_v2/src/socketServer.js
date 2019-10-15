@@ -60,11 +60,11 @@ class SocketServer {
 
         parser.load(data);
 
-        /**
-         * @todo - сообщение об успешном окончании парсинга города перевести сюда
-         * вместо коллбэка
-         */
         let response = await parser.parse();
+        
+        if (response && response.result === 'success') {
+          this.sendSuccess({type: response.type, data: response.data});
+        }
 
       });
     });
@@ -79,12 +79,12 @@ class SocketServer {
     });
   }
 
-  sendSuccess = (type, data) => {
+  sendSuccess = ({type, data}) => {
     let message = getSuccessReponseSchema(type, data);
     this.sendMessage(message);
   }
 
-  sendError = (type, data) => {
+  sendError = ({type, data}) => {
     let errorMessage = getErrorReponseSchema(type, data);
     this.sendMessage(errorMessage);
   }

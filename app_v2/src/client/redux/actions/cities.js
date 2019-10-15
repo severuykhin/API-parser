@@ -9,6 +9,7 @@ export const PUT_SELECTED_STACK    = `${moduleName}:PUT_SELECTED_STACK`;
 export const PUT_QUERY             = `${moduleName}:PUT_QUERY`;
 export const PUT_FILENAME          = `${moduleName}:PUT_FILENAME`;
 export const PUT_ACTIVE_CITY       = `${moduleName}:PUT_ACTIVE_CITY`;
+export const PUT_CITY_UPDATE       = `${moduleName}:PUT_CITY_UPDATE`;
 
 
 export const putQuery = (query) => {
@@ -76,3 +77,10 @@ export const putSelectedStack = (stack) => {
         payload: stack
     };
 };
+
+export const putCityUpdate = ({id, count}) => {
+    return {
+        type: PUT_CITY_UPDATE,
+        payload: {id, count}
+    };
+}

@@ -19,7 +19,7 @@ class Websocket {
             console.log('Websocket connection closed' + (event.wasClean ? ' clean' : ''));
             console.log('Websocket closed with code: ' + event.code + ', reason: ' + event.reason);
             setTimeout(function () {
-                self.websocket.createWebSocket(store);
+                self.createWebSocket(store);
             }, 3000);
         }
 

@@ -10,7 +10,8 @@ import {
   PUT_SELECTED_STACK,
   PUT_QUERY,
   PUT_FILENAME,
-  PUT_ACTIVE_CITY
+  PUT_ACTIVE_CITY,
+  PUT_CITY_UPDATE
 } from '../actions/cities'
 
 const allCities = [ ...bigCities.cities ];
@@ -51,7 +52,7 @@ export default function citiesReducer (state = initialState, action) {
             const newSelectedCities = [...state.selectedCities];
             const newSelectedCitiesIds = newSelectedCities.map(city => city.id);
             payload.forEach(city => {
-              if (newSelectedCitiesIds.indexOf(city.id) === -1) newSelectedCities.push(city);
+              if (newSelectedCitiesIds.indexOf(city.id) === -1) newSelectedCities.push({...city});
             });
             newState.selectedCities = newSelectedCities;
             newState.selectedStack = [...newSelectedCities];
@@ -92,6 +93,13 @@ export default function citiesReducer (state = initialState, action) {
         
         case PUT_ACTIVE_CITY:
             newState.activeCity = payload;
+            return newState;
+        
+        case PUT_CITY_UPDATE:
+            newState.selectedCities.forEach(item => {
+              if (item.id === payload.id) item.count = payload.count; 
+            });
+
             return newState;
         
         default:

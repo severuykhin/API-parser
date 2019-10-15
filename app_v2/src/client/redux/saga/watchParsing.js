@@ -13,17 +13,12 @@ function* parseNextCityFromStack() {
     let query    = getQuery(store);
     let fileName = getFilename(store);
 
-    if (!isActive) {
-        return false;
-    }
-
     let activeCity = stack.shift();
    
     if (!activeCity) {
         yield put(putStopParsing());
         return false;
     }
-
 
     yield put(putSelectedStack(stack));
     yield put(putActiveCity(activeCity))

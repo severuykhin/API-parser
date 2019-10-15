@@ -47,9 +47,9 @@ class Home extends React.Component {
   }
 
   handleStopParsing = () => {
-    console.log('stop parsing');
+    const { putStopParsing } = this.props;
+    putStopParsing && putStopParsing();
   }
-
 
   render() {
 
@@ -86,7 +86,7 @@ class Home extends React.Component {
       query, 
       fileName,
       isActive 
-    } = this.props;
+    } = this.props; 
 
     return <div>
         <label>
@@ -97,11 +97,16 @@ class Home extends React.Component {
         { 
           selectedCities.length > 0 && query.trim() && fileName.trim()
           ? <button 
-              onClick={() => { isActive ? this.handlePauseParsing() : this.handleStartParsing()}}>{isActive ? 'Остановить' : 'Начать'}</button> 
+              onClick={() => { isActive ? this.handlePauseParsing() : this.handleStartParsing()}}>
+              {isActive ? 'Остановить' : 'Начать'}
+            </button> 
           : null 
         }
-        
-        {false && <button>Приостановить</button>}
+        {
+          isActive 
+          ? <button onClick={this.handleStopParsing} >Отменить</button>
+          : null
+        }
       </div>
   }
 
@@ -114,6 +119,7 @@ class Home extends React.Component {
 
       let checked = selectedCitiesIds.indexOf(city.id) !== -1;
       let isActive = activeCity && activeCity.id === city.id;
+      let selectedCityCopy = selectedCities.filter(item => item.id === city.id)[0];
 
       return <div key={city.id}>
         <label>
@@ -122,8 +128,9 @@ class Home extends React.Component {
             checked={checked}
             onChange={(e) => { this.handleSingleleCityChange(e, city)}}
             type="checkbox"/> 
-            {city.name}
-            {isActive ? '...' : ''}
+            { city.name }
+            { selectedCityCopy && selectedCityCopy.count >= 0 ? `(${ selectedCityCopy.count })` : null }
+            {isActive ? '...' : null}
         </label>
       </div>
     });

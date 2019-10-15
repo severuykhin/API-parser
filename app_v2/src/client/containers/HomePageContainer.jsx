@@ -14,35 +14,21 @@ import {
 
 class HomePageContainer extends Component {
   render() {
-    const {
-      cities, 
-      addCities, 
-      removeCities, 
-      selectedCities,
-      putPauseParsing,
-      putStartParsing,
-      query,
-      fileName,
-      putQuery,
-      putFilename,
-      isActive,
-      activeCity
-    } = this.props;
-
     return (
       <HomePage
-        putStartParsing={putStartParsing}
-        putPauseParsing={putPauseParsing}
-        addCities={addCities}
-        removeCities={removeCities}
-        selectedCities={selectedCities}
-        cities={cities}
-        query={query}
-        fileName={fileName}
-        putQuery={putQuery}
-        putFilename={putFilename}
-        isActive={isActive}
-        activeCity={activeCity}
+        putStartParsing={this.props.putStartParsing}
+        putPauseParsing={this.props.putPauseParsing}
+        putStopParsing={this.props.putStopParsing}
+        addCities={this.props.addCities}
+        removeCities={this.props.removeCities}
+        selectedCities={this.props.selectedCities}
+        cities={this.props.cities}
+        query={this.props.query}
+        fileName={this.props.fileName}
+        putQuery={this.props.putQuery}
+        putFilename={this.props.putFilename}
+        isActive={this.props.isActive}
+        activeCity={this.props.activeCity}
         />
     )
   }

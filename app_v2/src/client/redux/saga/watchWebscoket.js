@@ -1,8 +1,11 @@
-import { store } from '../../index';
+import { store } from '../../index'
+
+import { getIsActive } from '../selectors/cities'
 
 import {  
     putContinueParsing,
-    putStopParsing
+    putStopParsing,
+    putCityUpdate
 } from '../actions/cities';
 
 import { PUT_WEBSOCKET_MESSAGE } from '../actions/websocket';
@@ -16,15 +19,14 @@ import {
 function* processMessage(action) {
 
     const message = action.payload;
+    const parsingIsActive = getIsActive(store);
 
     if (message.type === 'city-process') {
-        /**
-         * @todo - обновление прогресса
-         */
+        yield put(putCityUpdate({id: message.data.city.id, count: message.data.count }));
     }
 
-    if (message.type === 'city-end') {
-        store.dispatch(putContinueParsing());
+    if (message.type === 'city-end' && parsingIsActive) {
+        yield put(putContinueParsing());
     }
     
 }
