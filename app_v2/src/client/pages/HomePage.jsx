@@ -4,59 +4,52 @@ import HelmetMeta from '../components/HelmetMeta/HelmetMeta.jsx'
 
 class Home extends React.Component {
 
-  constructor(props) {
-    super(props);
-
-    this.requestInput = React.createRef()
-    this.enablePartitionCheckbox = React.createRef();
-
+  handleQueryChange = (e) => {
+    const { putQuery } = this.props;
+    putQuery && putQuery(e.target.value);
   }
 
-  renderOptions() {
-    if (!this.props.cities) return null;
-    return Object.keys(this.props.cities).map((element, index) => {
-      let elem = this.props.cities[index];
-      return <option key={ index } value={ index }>{ elem.type }</option>
-    })
+  handleFileNameChange = (e) => {
+    const { putFilename } = this.props;
+    putFilename && putFilename(e.target.value);
   }
 
-  handleSelectChange = (e) => {
-    let valueId = e.target.value;
-    this.props.handleSelectChange(valueId);
+  handleSingleleCityChange = (e, city) => {
+    const {addCities, removeCities} = this.props; 
+
+    if (e.target.checked) {
+      addCities && addCities([city]);
+    } else {
+      removeCities && removeCities([city]);
+    }
   }
 
-  renderInput() {
-    return <input ref={ this.requestInput } type='text' placeholder='Введите запрос' />
+  handleCheckAllChange = (e) => {
+    const {addCities, removeCities, cities} = this.props;
+    if (e.target.checked) {
+      addCities && addCities(cities);
+    } else {
+      removeCities && removeCities(cities);
+    }
   }
 
-  startParsing = () => {
-    let phrase = this.requestInput.current.value,
-        enablePartition = this.enablePartitionCheckbox.current.checked;
-
-    this.props.startParsing(phrase, enablePartition);
+  handleStartParsing = () => {
+    const { putStartParsing, query, fileName } = this.props;
+    if (!query.trim() || !fileName.trim()) {
+      return false;
+    } 
+    putStartParsing && putStartParsing();
   }
 
-  renderActiveCitiesList() {
-    return (
-      <ul>
-        { this.props.activeCities.map((item, index) => {
-
-          let count = (item.count && item.count > 0) ? `(${item.count})` : '';
-
-          return <li key={ index }> { item.name } { count }  { this.props.activeCityIndex === index ? '...' : '' } </li>
-        }) }
-      </ul> 
-    )
+  handlePauseParsing = () => {
+    const { putPauseParsing } = this.props;
+    putPauseParsing && putPauseParsing();
   }
 
-  renderEnablePartitionCheckbox() {
-    return (
-      <label>
-        <input ref={this.enablePartitionCheckbox} type="checkbox"/>
-        Разбить таблицу по городам
-      </label>
-    )
+  handleStopParsing = () => {
+    console.log('stop parsing');
   }
+
 
   render() {
 
@@ -67,19 +60,73 @@ class Home extends React.Component {
     return (
 
       <div>
-        { this.props.status }
         <HelmetMeta meta={ meta } />
         <hr/>
-        <select onChange={ this.handleSelectChange } name='cities-type' id='cities-type'>
-          <option value=''>Выберите города для парсинга</option>
-          { this.renderOptions() }
-        </select>
-        { this.props.activeCities && this.renderInput() }
-        { this.props.activeCities && this.renderEnablePartitionCheckbox() }
-        <button onClick={ this.startParsing }>Поехали</button>
-        { this.props.activeCities && this.renderActiveCitiesList() }
+        { this.renderControls() }
+        { this.renderCheckAll() }
+        <hr/>
+        { this.renderCities() }
       </div>
     )
+  }
+
+  renderControls() {
+
+    let { query, fileName } = this.props;
+
+    return (<div>
+      <p>Введите запрос: <input value={query} onChange={this.handleQueryChange}/></p>
+      <p>Название файла: <input value={fileName} onChange={this.handleFileNameChange}/></p>
+    </div>);
+  }
+
+  renderCheckAll() {
+    const { 
+      selectedCities, 
+      query, 
+      fileName,
+      isActive 
+    } = this.props;
+
+    return <div>
+        <label>
+          <input  
+            onChange={this.handleCheckAllChange}
+            type="checkbox"/> Выбрать все
+        </label>
+        { 
+          selectedCities.length > 0 && query.trim() && fileName.trim()
+          ? <button 
+              onClick={() => { isActive ? this.handlePauseParsing() : this.handleStartParsing()}}>{isActive ? 'Остановить' : 'Начать'}</button> 
+          : null 
+        }
+        
+        {false && <button>Приостановить</button>}
+      </div>
+  }
+
+  renderCities() {
+    const { cities, selectedCities, activeCity } = this.props;
+
+    const selectedCitiesIds = selectedCities.map(city => city.id);
+
+    return cities.map( city => {
+
+      let checked = selectedCitiesIds.indexOf(city.id) !== -1;
+      let isActive = activeCity && activeCity.id === city.id;
+
+      return <div key={city.id}>
+        <label>
+          <input 
+            id={city.id} 
+            checked={checked}
+            onChange={(e) => { this.handleSingleleCityChange(e, city)}}
+            type="checkbox"/> 
+            {city.name}
+            {isActive ? '...' : ''}
+        </label>
+      </div>
+    });
   }
 }
 

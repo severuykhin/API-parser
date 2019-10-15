@@ -7,14 +7,24 @@ import thunk from 'redux-thunk';
 import { logger } from 'redux-logger';
 import { Provider } from 'react-redux';
 import reducers from './redux/index';
+import Websocket from './services/Websocket';
+import createSagaMiddleWare from 'redux-saga';
+import rootSaga from './redux/saga/rootSaga';
+
 
 // Prepare preloaded state
 const preloadedState = window._PRELOADED_STATE_;
 delete window._PRELOADED_STATE_;
 document.body.removeChild(document.getElementById('preloaded_state'));
 
+const sagaMiddleware = createSagaMiddleWare();
+
 // Creating store and load reducer and preloaded state into it
-const store = createStore(reducers, preloadedState, applyMiddleware(thunk, logger));
+export const store = createStore(reducers, preloadedState, applyMiddleware(thunk, logger, sagaMiddleware));
+
+sagaMiddleware.run(rootSaga);
+
+Websocket.createWebSocket(store);
 
 // Render BROWSER app
 ReactDOM.hydrate(

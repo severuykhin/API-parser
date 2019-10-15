@@ -1,5 +1,32 @@
 import WebSocket from 'ws';
 import YandexApi from './api/yandex';
+import KeyManager from './services/KeyManager';
+import keys from './data/keys.json';
+
+/**
+ * Схема ответа при успешном выполнении запроса
+ * @param {object} data - содержание сообщения
+ */
+const getSuccessReponseSchema = (type, data) => {
+  return  {
+    result: 'success',
+    type: type,
+    data: {...data}
+  };
+}
+
+/**
+ * Схема ответа при ошибочном выполнении операции
+ * @param {string} type - тип ошибки 
+ * @param {object} data -содержание сообщения
+ */
+const getErrorReponseSchema = (type, data) => {
+  return {
+    result: 'error',
+    type: type, 
+    data: {...data}
+  };
+}
 
 const PORT = 8080;
 
@@ -11,28 +38,33 @@ class SocketServer {
 
   init() {
 
+    // Create web socket server instance
     this.server = new WebSocket.Server({ port: PORT });
 
+    // Create API keys manager
+    const keysManager = new KeyManager({ keys });
+
+    // Create instance of Yandex API parser
+    const parser = new YandexApi({
+      keysManager: keysManager,
+      onData: this.sendSuccess,
+      onError: this.sendError
+    });
+
+    // Action on connection
     this.server.on('connection', ws => {
-      ws.on('message', async (message) => {
-        
+
+      ws.on('message', async (message) => { 
+
         let data = JSON.parse(message);
 
-        let yaParser = new YandexApi({
-          request: data.phrase,
-          enablePartition: data.enablePartition,
-          city: data.activeCity,
-          cityIndex: data.cityIndex,
-          fileDescriptor: data.fileDescriptor,
-          onData: this.notifyCityResults
-        });
+        parser.load(data);
 
-        let response = await yaParser.parse();
-
-        this.sendMessage({
-          type: 'end',
-          data: response
-        });
+        /**
+         * @todo - сообщение об успешном окончании парсинга города перевести сюда
+         * вместо коллбэка
+         */
+        let response = await parser.parse();
 
       });
     });
@@ -41,17 +73,20 @@ class SocketServer {
 
   }
 
-  sendMessage(config) {
+  sendMessage(message) {
     this.server.clients.forEach( client => {
-      client.send(JSON.stringify(config));
+      client.send(JSON.stringify(message));
     });
   }
 
-  notifyCityResults = (data) => {
-    this.sendMessage({
-      type: 'result-notify',
-      data
-    });
+  sendSuccess = (type, data) => {
+    let message = getSuccessReponseSchema(type, data);
+    this.sendMessage(message);
+  }
+
+  sendError = (type, data) => {
+    let errorMessage = getErrorReponseSchema(type, data);
+    this.sendMessage(errorMessage);
   }
 }
 

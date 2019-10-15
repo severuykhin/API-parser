@@ -5,24 +5,22 @@
 /* eslint-disable no-loop-func */
 import axios from 'axios'
 import fs from 'fs'
-import keys from '../data/keys.json'
+import querystring from 'querystring'
 
 class YandexApi {
 
   constructor(config) {
-    this.keys = keys.yandex;
-    this.activeKey = null;
-
-    this.fileName = null;
-    this.fileDescriptor = config.fileDescriptor;
-    this.city = config.city;
-    this.cityIndex = config.cityIndex;
-    this.request = config.request;
-    this.enablePartition = config.enablePartition;
 
     this.onDataCallback = config.onData;
+    this.onError = config.onError;
 
-    this.setActiveKey();
+    this.keysManager = config.keysManager;
+
+    this.fileName = null;
+    this.city = null;
+    this.cityIndex = null;
+    this.request = null;
+    this.enablePartition = null;
 
     this.fileHeader = [
       'Город',
@@ -41,34 +39,24 @@ class YandexApi {
 
   }
 
-  getNextActiveKeyIndex() {
-    let index = 0;
+  load(data) {
+    // Request schema
+    // {
+    //   request: data.phrase,
+    //   enablePartition: data.enablePartition,
+    //   city: data.activeCity,
+    //   cityIndex: data.cityIndex,
+    //   fileDescriptor: data.fileDescriptor,
+    // }
 
-    for (let i = 0; i < this.keys.length; i++) {
-      let key = this.keys[i];
-      if (key.empty === false) {
-        index = i;
-        break;
-      }
-    }
+    this.fileName = data.fileName + '.csv';
+    this.city = data.city;
+    this.request = data.request;
+    this.enablePartition = data.enablePartition;
 
-    return index;
-  }
-
-  setActiveKey() {
-    let keyIndex = this.getNextActiveKeyIndex();
-    this.activeKey = this.keys[keyIndex];
-  }
-
-  changeActiveKey() {
-    this.keys[this.activeKey].empty = true;
-    this.setActiveKey();
   }
 
   createFile() {
-
-    if(fs.existsSync(this.fileName)) return;
-
     let data = `${this.fileHeader.join(';')}\n`;
     fs.writeFileSync(this.fileName, data, { 
       flag: 'wx',
@@ -76,14 +64,11 @@ class YandexApi {
     });
   }
 
-  setFileName() {
-    this.fileName = `${this.request}-${this.fileDescriptor}.csv`;
-  }
-
   async parse() {
 
-    this.setFileName();
-    this.createFile();
+    if(fs.existsSync(this.fileName) === false) {
+      this.createFile();
+    }    
 
     if (this.enablePartition) {
       this.appendEmptyLine();
@@ -100,12 +85,27 @@ class YandexApi {
       let resultsCount;
 
       do {
-
+        
         let response = await this.getContent({ skip });
+
+        /**
+         * @todo - Обработать ошибки запроса
+         */
+        // try {
+        // } catch(e) {
+        //   // Api key limit
+        //   if (e.toString() === 'Error: Request failed with status code 403') {
+        //     this.onError({message: 'Ключ апи исчерпал лимит запросов', type: 'error-limit'})
+        //     console.log(this.key);
+        //     this.changeActiveKey();
+        //     console.log(this.key);
+        //     reject();
+        //   }
+        // }
+
         let items = response.data.features;
 
         if (!response.data || !response.data.features) {
-          this.changeActiveKey();
           continue;
         }
 
@@ -118,19 +118,35 @@ class YandexApi {
 
         skip += step;
 
-        this.onDataCallback({ count, cityId: this.cityIndex, items });
+        this.onDataCallback('city-process', { 
+          count, 
+          city: this.city, 
+          items 
+        });
 
         await this.noop();
 
       } while (resultsCount > count);
 
+      this.onDataCallback('city-end', { count, city: this.city });
       resolve(this.city.name);
 
     });
   }
 
   async getContent(params) {
-    return axios.get(`https://search-maps.yandex.ru/v1/?text=${encodeURIComponent(this.request)}&lang=ru_RU&ll=${this.city.geo}&spn=0.400,0.360&type=biz&results=500&skip=${params.skip}&apikey=${this.activeKey.key}`);
+    let qs = querystring.stringify({
+      text:    this.request,
+      lang:    'ru_RU',
+      ll:      this.city.geo,
+      spn:     '0.400,0.360',
+      type:    'biz',
+      results: 500,
+      skip:    params.skip,
+      apikey:  this.keysManager.getActiveKey()
+    });
+
+    return axios.get(`https://search-maps.yandex.ru/v1/?${qs}`);
   }
 
   async noop() {

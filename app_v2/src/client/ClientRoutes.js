@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route } from 'react-router-dom'
-import HomePageContainer from './components/HomePageContainer.jsx';
+import HomePageContainer from './containers/HomePageContainer.jsx';
 import UsersPage from './pages/UsersPage.jsx'
 
 export default () => (
