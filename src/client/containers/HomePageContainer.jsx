@@ -41,7 +41,7 @@ const mapStateToProps = state => {
     query: state[citiesModule].query,
     fileName: state[citiesModule].fileName,
     isActive: state[citiesModule].active,
-    activeCity: state[citiesModule].activeCity
+    activeCity: state[citiesModule].activeCity,
   };
 }
 

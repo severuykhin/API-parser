@@ -126,11 +126,12 @@ class Home extends React.Component {
           <input 
             id={city.id} 
             checked={checked}
+            disabled={isActive}
             onChange={(e) => { this.handleSingleleCityChange(e, city)}}
             type="checkbox"/> 
             { city.name }
             { selectedCityCopy && selectedCityCopy.count >= 0 ? `(${ selectedCityCopy.count })` : null }
-            {isActive ? '...' : null}
+            { isActive ? '...' : null }
         </label>
       </div>
     });

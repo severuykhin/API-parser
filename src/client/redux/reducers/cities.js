@@ -31,7 +31,9 @@ allCities.sort((a, b) => {
   return 0;
 });
 
-
+/**
+ * @todo - Stack везде переименовать в Queue
+ */
 const initialState = {
     sourceCities: allCities,
     selectedCities: [],
@@ -50,12 +52,20 @@ export default function citiesReducer (state = initialState, action) {
     switch(type) {
         case ADD_CITIES:
             const newSelectedCities = [...state.selectedCities];
+            const newSelectedStack  = [...state.selectedStack];
             const newSelectedCitiesIds = newSelectedCities.map(city => city.id);
+            const newSelectedCitiesStackIds = newSelectedStack.map(city => city.id);
+
             payload.forEach(city => {
-              if (newSelectedCitiesIds.indexOf(city.id) === -1) newSelectedCities.push({...city});
+              if (newSelectedCitiesIds.indexOf(city.id) === -1) 
+                newSelectedCities.push({...city});
+              if (newSelectedCitiesStackIds.indexOf(city.id) === -1)
+                newSelectedStack.push({...city})
             });
+
             newState.selectedCities = newSelectedCities;
-            newState.selectedStack = [...newSelectedCities];
+            newState.selectedStack = newSelectedStack;
+
             return newState;
 
         case REMOVE_CITIES:
