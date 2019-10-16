@@ -64,7 +64,11 @@ class YandexApi {
     }    
 
     if (this.enablePartition) {
-      this.appendEmptyLine();
+      this.appenthis.onDataCallback({type: 'city-process', data: { 
+        count, 
+        city: this.city, 
+        items 
+      }});dEmptyLine();
       this.appendCityLine();
     }
 
@@ -84,6 +88,9 @@ class YandexApi {
         try {
           response = await this.getContent({ skip });
         } catch(e) {
+          /**
+           * @todo Придумать что-нибудь другое
+           */
           let error = errorResponseParser(e, this);
           this.onErrorCallback(error);
           this.keysManager.changeActiveKey();
@@ -92,18 +99,21 @@ class YandexApi {
 
         let items = response.data.features;
 
+        /**
+         * @todo - Выбросить ошибку и break
+         */
         if (!response.data || !response.data.features) {
-          continue;
+          break;
         }
 
         resultsCount = response.data.properties.ResponseMetaData.SearchResponse.found;
+
+        if (parseInt(resultsCount, 10) <= 0) break;
 
         items.forEach((item, index) => {
           this.processItem(item, index);
           count++;
         });
-
-        skip += step;
 
         this.onDataCallback({type: 'city-process', data: { 
           count, 
@@ -111,9 +121,11 @@ class YandexApi {
           items 
         }});
 
+        skip += step;
+
         await this.noop();
 
-      } while (resultsCount > count);
+      } while (resultsCount > count || !resultsCount);
 
       resolve({
         result: 'success', 
