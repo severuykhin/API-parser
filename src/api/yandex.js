@@ -88,13 +88,16 @@ class YandexApi {
         try {
           response = await this.getContent({ skip });
         } catch(e) {
-          /**
-           * @todo Придумать что-нибудь другое
-           */
+
           let error = errorResponseParser(e, this);
           this.onErrorCallback(error);
-          this.keysManager.changeActiveKey();
-          continue;
+
+          if (error.isAccessError) {
+            this.keysManager.changeActiveKey();
+            continue;
+          } else {
+            break;
+          }
         }
 
         let items = response.data.features;

@@ -1,4 +1,5 @@
 import { putWebsocketMessage } from '../redux/actions/websocket';
+import { putPauseParsing } from '../redux/actions/cities';
 
 class Websocket {
 
@@ -16,8 +17,12 @@ class Websocket {
         }
 
         this.websocket.onclose = function (event) {
+
+            store.dispatch(putPauseParsing());
+
             console.log('Websocket connection closed' + (event.wasClean ? ' clean' : ''));
             console.log('Websocket closed with code: ' + event.code + ', reason: ' + event.reason);
+
             setTimeout(function () {
                 self.createWebSocket(store);
             }, 3000);
