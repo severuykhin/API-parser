@@ -2,6 +2,7 @@ import WebSocket from 'ws';
 import YandexApi from './api/yandex';
 import KeyManager from './services/KeyManager';
 import keys from './data/keys.json';
+import config from './common/config';
 
 /**
  * Схема ответа при успешном выполнении запроса
@@ -28,7 +29,7 @@ const getErrorReponseSchema = (type, data) => {
   };
 }
 
-const PORT = 8080;
+const PORT = config.websocketPort;
 
 class SocketServer {
 
@@ -64,6 +65,8 @@ class SocketServer {
         
         if (response && response.result === 'success') {
           this.sendSuccess({type: response.type, data: response.data});
+        } else {
+          this.sendError({type: response.type, data: response.data})
         }
 
       });

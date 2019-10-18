@@ -1,5 +1,6 @@
 import { putWebsocketMessage } from '../redux/actions/websocket';
 import { putPauseParsing } from '../redux/actions/cities';
+import config from '../../common/config';
 
 class Websocket {
 
@@ -8,7 +9,7 @@ class Websocket {
     }
 
     createWebSocket(store) {
-        this.websocket = new WebSocket('ws://localhost:8080');
+        this.websocket = new WebSocket(`ws://localhost:${config.websocketPort}`);
 
         const self = this;
 

@@ -7,6 +7,7 @@ import axios from 'axios'
 import fs from 'fs'
 import querystring from 'querystring'
 import errorResponseParser from '../helpers/yandexErrorResponseParser'
+import { errorAllKeysExpired } from '../common/errors/schemas';
 
 class YandexApi {
 
@@ -63,15 +64,6 @@ class YandexApi {
       this.createFile();
     }    
 
-    if (this.enablePartition) {
-      this.appenthis.onDataCallback({type: 'city-process', data: { 
-        count, 
-        city: this.city, 
-        items 
-      }});dEmptyLine();
-      this.appendCityLine();
-    }
-
     return new Promise(async (resolve, reject) => {
 
       let step = 500;
@@ -86,7 +78,9 @@ class YandexApi {
         let response;
 
         try {
+
           response = await this.getContent({ skip });
+
         } catch(e) {
 
           let error = errorResponseParser(e, this);
@@ -94,7 +88,11 @@ class YandexApi {
 
           if (error.isAccessError) {
             this.keysManager.changeActiveKey();
-            continue;
+            if (this.keysManager.isAllKeysExpired()) {
+              reject(errorAllKeysExpired());
+            } else {
+              continue;
+            }
           } else {
             break;
           }

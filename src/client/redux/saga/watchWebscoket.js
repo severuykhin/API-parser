@@ -1,14 +1,13 @@
 import { store } from '../../index'
-
 import { getIsActive } from '../selectors/cities'
-
 import {  
     putContinueParsing,
     putStopParsing,
     putCityUpdate
 } from '../actions/cities';
-
 import { PUT_WEBSOCKET_MESSAGE } from '../actions/websocket';
+import * as ERROR_CONSTANTS from '../../../common/errors/CONSTATNS'; 
+
 
 import { 
     takeLatest, 
@@ -28,6 +27,10 @@ function* processMessage(action) {
     if (message.type === 'city-end' && parsingIsActive) {
         yield put(putContinueParsing());
     }
+
+    if (message.type === ERROR_CONSTANTS.ERROR_KEYS_EXPIRED) {
+        yield(put(putStopParsing()));
+    } 
     
 }
 

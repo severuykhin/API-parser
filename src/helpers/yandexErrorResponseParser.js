@@ -1,8 +1,13 @@
+import * as CONSTATNS from '../common/errors/CONSTATNS'; 
+
+/**
+ * @todo - перенести все вохвращаемые знаяения в schemas 
+ */
 export default function errorResponseParser(error, apiContext) {
 
     if (!error.response) {
         return {
-            type: 'error-request',
+            type: CONSTATNS.ERROR_REQUEST,
             status: 500,
             isAccessError: false,
             data: {
@@ -16,7 +21,7 @@ export default function errorResponseParser(error, apiContext) {
 
     if (errorStatus === 403) {
         return {
-            type: 'error-access',
+            type: CONSTATNS.ERROR_ACCESS,
             status: errorStatus,
             isAccessError: true,
             data: {
@@ -28,7 +33,7 @@ export default function errorResponseParser(error, apiContext) {
 
     if (errorStatus === 500) {
         return {
-            type: 'error-server',
+            type: CONSTATNS.ERRPR_SERVER,
             status: errorStatus,
             isAccessError: false,
             data: {

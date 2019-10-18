@@ -15,6 +15,12 @@ class KeyManager {
     changeActiveKey() {
         this.keys[this.activeKey].empty = true;
         this.activeKey += 1;
+        return this.keys[this.activeKey];
+    }
+
+    isAllKeysExpired() {
+        let keysExpired = this.keys.filter(key => key.empty === true);
+        return this.getActiveKey() === false && keysExpired.length === this.keys.length;
     }
 
 }

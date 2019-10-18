@@ -1,0 +1,4 @@
+export const ERROR_REQUEST = 'ERROR_REQUEST';
+export const ERROR_ACCESS  = 'ERROR_ACCESS';
+export const ERROR_KEYS_EXPIRED  = 'ERROR_KEYS_EXPIRED';
+export const ERRPR_SERVER  = 'ERROR_SERVER';
