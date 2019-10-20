@@ -1,6 +1,6 @@
-import React from 'react'
-import HelmetMeta from '../components/HelmetMeta/HelmetMeta.jsx'
-
+import React from 'react';
+import HelmetMeta from '../components/HelmetMeta/HelmetMeta.jsx';
+import ErrorsContainer from '../containers/ErrorsContainer.jsx';
 
 class Home extends React.Component {
 
@@ -63,6 +63,8 @@ class Home extends React.Component {
         <HelmetMeta meta={ meta } />
         <hr/>
         { this.renderControls() }
+        { this.renderErrors() }
+        <hr />
         { this.renderCheckAll() }
         <hr/>
         { this.renderCities() }
@@ -78,6 +80,10 @@ class Home extends React.Component {
       <p>Введите запрос: <input value={query} onChange={this.handleQueryChange}/></p>
       <p>Название файла: <input value={fileName} onChange={this.handleFileNameChange}/></p>
     </div>);
+  }
+
+  renderErrors() {
+    return <ErrorsContainer />;
   }
 
   renderCheckAll() {

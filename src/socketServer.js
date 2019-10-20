@@ -61,12 +61,13 @@ class SocketServer {
 
         parser.load(data);
 
-        let response = await parser.parse();
-        
-        if (response && response.result === 'success') {
-          this.sendSuccess({type: response.type, data: response.data});
-        } else {
-          this.sendError({type: response.type, data: response.data})
+        try {
+          let response = await parser.parse();
+          if (response && response.result === 'success') {
+            this.sendSuccess({type: response.type, data: response.data});
+          }
+        } catch (e) {
+          this.sendError({type: e.type, data: e.data})
         }
 
       });

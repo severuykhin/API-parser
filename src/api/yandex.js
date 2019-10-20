@@ -13,6 +13,8 @@ class YandexApi {
 
   constructor(config) {
 
+    this.REQUEST_TIMEOUT = 1500;
+
     this.onDataCallback  = config.onData;
     this.onErrorCallback = config.onError;
 
@@ -89,7 +91,7 @@ class YandexApi {
           if (error.isAccessError) {
             this.keysManager.changeActiveKey();
             if (this.keysManager.isAllKeysExpired()) {
-              reject(errorAllKeysExpired());
+              return reject(errorAllKeysExpired());
             } else {
               continue;
             }
@@ -98,14 +100,15 @@ class YandexApi {
           }
         }
 
-        let items = response.data.features;
-
+        
         /**
          * @todo - Выбросить ошибку и break
          */
         if (!response.data || !response.data.features) {
           break;
         }
+
+        let items = response.data.features;
 
         resultsCount = response.data.properties.ResponseMetaData.SearchResponse.found;
 
@@ -156,7 +159,7 @@ class YandexApi {
     return new Promise((res, rej) => {
       setTimeout(() => {
         res();
-      }, 5000);
+      }, this.REQUEST_TIMEOUT);
     });
   }
 

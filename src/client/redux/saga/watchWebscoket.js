@@ -5,6 +5,7 @@ import {
     putStopParsing,
     putCityUpdate
 } from '../actions/cities';
+import { putError } from '../actions/errors'
 import { PUT_WEBSOCKET_MESSAGE } from '../actions/websocket';
 import * as ERROR_CONSTANTS from '../../../common/errors/CONSTATNS'; 
 
@@ -28,8 +29,13 @@ function* processMessage(action) {
         yield put(putContinueParsing());
     }
 
+    if (message.type === ERROR_CONSTANTS.ERROR_ACCESS) {
+        yield put(putError(message));
+    }
+
     if (message.type === ERROR_CONSTANTS.ERROR_KEYS_EXPIRED) {
         yield(put(putStopParsing()));
+        yield put(putError(message));
     } 
     
 }
